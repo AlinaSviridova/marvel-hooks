@@ -1,7 +1,8 @@
 import {useState, useRef, useEffect} from 'react';
 import {PropTypes} from 'prop-types';
-import MarvelService from '../../services/MarvelService'
-// import Spinner from '../spinner/Spinner'
+import useMarvelService from '../../services/MarvelService'
+import Spinner from '../spinner/Spinner'
+import ErrorMessage from '../errorMessage/ErrorMessage'
 import './charList.scss';
 
 
@@ -9,34 +10,27 @@ import './charList.scss';
 
 const CharList = (props) => {
 
-    const [chars, setCharlist] = useState([]);
-    const [loaing, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    const [chars, setCharlist] = useState([]); 
     const [newItemLoading, setNewItemLoading] = useState(false);
     const [offset, setOffset] = useState(210);
-    const [charEnded] = useState(false);
+    const [charEnded, setCharEnded] = useState(false);
 
     // focusRef = React.createRef();
-
+    const {loading, error, getAllCharacters} = useMarvelService();
    
-    const marvelService = new MarvelService();
+    // const marvelService = useMarvelService();
 
     useEffect (() => {
-        onRequest();
+        onRequest(offset, true);
     }, [])
      
 
-    const onRequest = (offset) => {
-        onCharListLoading();
-        marvelService
-        .getAllCharacters(offset)
-        .then(createList)
-        .catch(onError)
+    const onRequest = (offset, initial) => {
+        initial ? setNewItemLoading(false) : setNewItemLoading(true);
+        getAllCharacters(offset)
+        .then(createList) 
     } 
-
-    const onCharListLoading = () => {
-         setNewItemLoading(true);
-    }
+ 
  
     const createList = (newCharList) => { 
         let ended = false; 
@@ -45,18 +39,11 @@ const CharList = (props) => {
         }
  
         setCharlist(chars => [...chars, ...newCharList]);
-        setLoading(loaing => false);
         setNewItemLoading(newItemLoading => false);
         setOffset(offset => offset + 9);
-        charEnded(charEnded => ended);
+        setCharEnded(charEnded => ended);
 
-    }
-    
-    const onError = () => {
-        setError(true);
-        setLoading(loading => false);
-    }
-
+    } 
     const itemRefs = useRef([]);
     
     const focusOnItem = (id) => {
@@ -89,9 +76,14 @@ const CharList = (props) => {
             )
         });
 
+        const errorMessage = error ? <ErrorMessage/> : null;
+        const spinner = loading && !newItemLoading ? <Spinner/> : null;
+
         return (
             <div className="char__list">
                 <ul className="char__grid">
+                {errorMessage}
+                {spinner}
                 {elements}
                 </ul>
                 <button className="button button__main button__long"
@@ -105,7 +97,7 @@ const CharList = (props) => {
 }
 
 CharList.propTypes = { 
-    onCharSelected: PropTypes.func
+    onCharSelected: PropTypes.func.isRequired
 }
 
 export default CharList;
