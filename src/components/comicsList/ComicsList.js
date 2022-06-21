@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import {Link} from 'react-router-dom'
 import useMarvelService from '../../services/MarvelService'
 import './comicsList.scss';
 import uw from '../../resources/img/UW.png';
@@ -41,12 +42,12 @@ const ComicsList = () => {
         const items = arr.map((item, i) => {
             const {title, thumbnail, price} = item;
             return (
-                <li className="comics__item">
-                    <a href="#">
+                <li className="comics__item" key={i}>
+                    <Link to={`/comics/${item.id}`}>
                         <img src={thumbnail} alt={title} className="comics__item-img"/>
                         <div className="comics__item-name">{title}</div>
                         <div className="comics__item-price">{price}</div>
-                    </a>
+                    </Link>
                 </li>
             )
         })
