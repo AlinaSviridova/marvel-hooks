@@ -5,7 +5,24 @@ import Spinner from '../spinner/Spinner'
 import ErrorMessage from '../errorMessage/ErrorMessage'
 import './charList.scss';
 
-
+const setContent = (process, Component, newItemLoading) => {
+    switch (process) {
+        case 'waiting':
+            return <Spinner/>;
+            break;
+        case 'loading':
+            return newItemLoading ? <Component/> : <Spinner/>;
+            break;
+        case 'confirmed':
+            return <Component/>;
+            break;
+        case 'error':
+            return <ErrorMessage/>
+            break;
+        default:
+            throw new Error('Unexpected process state');
+    }
+}
 
 
 const CharList = (props) => {
@@ -16,7 +33,7 @@ const CharList = (props) => {
     const [charEnded, setCharEnded] = useState(false);
 
     // focusRef = React.createRef();
-    const {loading, error, getAllCharacters} = useMarvelService();
+    const {getAllCharacters, process, setProcess} = useMarvelService();
    
     // const marvelService = useMarvelService();
 
@@ -28,7 +45,8 @@ const CharList = (props) => {
     const onRequest = (offset, initial) => {
         initial ? setNewItemLoading(false) : setNewItemLoading(true);
         getAllCharacters(offset)
-        .then(createList) 
+        .then(createList)
+        .then(() => setProcess('confirmed'))
     } 
  
  
@@ -53,7 +71,7 @@ const CharList = (props) => {
         itemRefs.current[id].focus();
     }
  
-        const elements = chars.map ((item, i) => {
+        const elements = () => chars.map ((item, i) => {
         const {name, thumbnail, id} = item; 
             return ( 
                  <li className="char__item"
@@ -75,16 +93,14 @@ const CharList = (props) => {
                     </li> 
             )
         });
-
-        const errorMessage = error ? <ErrorMessage/> : null;
-        const spinner = loading && !newItemLoading ? <Spinner/> : null;
-
+ 
         return (
             <div className="char__list">
                 <ul className="char__grid">
-                {errorMessage}
-                {spinner}
+                {/* {errorMessage}
+                {spinner} */}
                 {elements}
+                {setContent(process, () => elements(), newItemLoading)}
                 </ul>
                 <button className="button button__main button__long"
                 disabled={newItemLoading}
