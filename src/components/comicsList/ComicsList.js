@@ -9,16 +9,16 @@ const setContent = (process, Component, newItemLoading) => {
     switch (process) {
         case 'waiting':
             return <Spinner/>;
-            break;
+            // eslint-disable-next-line
         case 'loading':
             return newItemLoading ? <Component/> : <Spinner/>;
-            break;
+            // eslint-disable-next-line
         case 'confirmed':
             return <Component/>;
-            break;
+            // eslint-disable-next-line
         case 'error':
             return <ErrorMessage/>
-            break;
+            // eslint-disable-next-line
         default:
             throw new Error('Unexpected process state');
     }

@@ -6,16 +6,16 @@ import Skeleton from '../components/skeleton/Skeleton'
         switch (process) {
             case 'waiting':
                 return <Skeleton/>;
-                break;
+                // eslint-disable-next-line
             case 'loading':
                 return <Spinner/>;
-                break;
+                // eslint-disable-next-line
             case 'confirmed':
                 return <Component data={data}/>;
-                break;
+                // eslint-disable-next-line
             case 'error':
                 return <ErrorMessage/>
-                break;
+                // eslint-disable-next-line
             default:
                 throw new Error('Unexpected process state');
         }

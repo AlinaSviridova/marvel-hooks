@@ -4,21 +4,22 @@ import useMarvelService from '../../services/MarvelService'
 import Spinner from '../spinner/Spinner'
 import ErrorMessage from '../errorMessage/ErrorMessage'
 import './charList.scss';
+import { useMemo } from 'react';
 
 const setContent = (process, Component, newItemLoading) => {
     switch (process) {
         case 'waiting':
             return <Spinner/>;
-            break;
+            // eslint-disable-next-line
         case 'loading':
             return newItemLoading ? <Component/> : <Spinner/>;
-            break;
+            // eslint-disable-next-line
         case 'confirmed':
             return <Component/>;
-            break;
+            // eslint-disable-next-line
         case 'error':
             return <ErrorMessage/>
-            break;
+            // eslint-disable-next-line
         default:
             throw new Error('Unexpected process state');
     }
@@ -93,14 +94,17 @@ const CharList = (props) => {
                     </li> 
             )
         });
+
+        const elementsList = useMemo (() => {
+            return setContent(process, () => elements(), newItemLoading);
+            // eslint-disable-next-line
+        }, [process]);
  
         return (
             <div className="char__list">
-                <ul className="char__grid">
-                {/* {errorMessage}
-                {spinner} */}
-                {elements}
-                {setContent(process, () => elements(), newItemLoading)}
+                
+                <ul className="char__grid"> 
+                    {elementsList}
                 </ul>
                 <button className="button button__main button__long"
                 disabled={newItemLoading}
